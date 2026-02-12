@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Digit Recognition</title>
+</head>
+<body>
+    <h2>Draw a Digit</h2>
+
+    <canvas id="canvas" width="280" height="280" style="border:1px solid;"></canvas>
+    <br><br>
+    <button onclick="clearCanvas()">Clear</button>
+    <button onclick="predict()">Predict</button>
+
+    {% if prediction is not none %}
+        <h3>Prediction: {{ prediction }}</h3>
+        <h4>Confidence: {{ confidence }}</h4>
+    {% endif %}
+
+    <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        let drawing = false;
+
+        canvas.addEventListener("mousedown", () => drawing = true);
+        canvas.addEventListener("mouseup", () => drawing = false);
+        canvas.addEventListener("mousemove", draw);
+
+        function draw(e) {
+            if (!drawing) return;
+            ctx.fillStyle = "white";
+            ctx.beginPath();
+            ctx.arc(e.offsetX, e.offsetY, 8, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+
+        function clearCanvas() {
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function predict() {
+            const image = canvas.toDataURL("image/png");
+
+            const form = document.createElement("form");
+            form.method = "POST";
+
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = "image";
+            input.value = image;
+
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
+</body>
+</html>
